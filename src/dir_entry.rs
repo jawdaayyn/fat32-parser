@@ -63,5 +63,10 @@ impl DirEntry {
     pub fn is_system(&self) -> bool {
         self.attributes & ATTR_SYSTEM != 0
     }
+    
+    /// vérifie si c'est une entrée de nom long
+    pub fn is_long_name(&self) -> bool {
+        self.attributes == ATTR_LONG_NAME
+    }
 }
 

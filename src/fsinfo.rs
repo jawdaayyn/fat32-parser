@@ -25,5 +25,23 @@ impl FSInfo {
             && self.struct_signature == 0x61417772
             && self.trail_signature == 0xAA550000
     }
+    
+    /// retourne le nombre de clusters libres
+    pub fn free_clusters(&self) -> Option<u32> {
+        if self.free_count == 0xFFFFFFFF {
+            None
+        } else {
+            Some(self.free_count)
+        }
+    }
+    
+    /// retourne le prochain cluster libre
+    pub fn next_free_cluster(&self) -> Option<u32> {
+        if self.next_free == 0xFFFFFFFF {
+            None
+        } else {
+            Some(self.next_free)
+        }
+    }
 }
 
