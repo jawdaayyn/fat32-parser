@@ -10,15 +10,22 @@ cargo build
 
 ## Utilisation
 
-Le programme a besoin d'une image FAT32 :
+Générer une image de test :
+
+```bash
+cargo run generate-img
+```
+
+Parser une image FAT32 :
 
 ```bash
 cargo run <image.fat32>
 ```
 
-Exemple :
+Exemple complet :
 ```bash
-cargo run disk.img
+cargo run generate-img
+cargo run test.img
 ```
 
 ## Tests
