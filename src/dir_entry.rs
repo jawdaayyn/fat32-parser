@@ -58,5 +58,10 @@ impl DirEntry {
     pub fn is_hidden(&self) -> bool {
         self.attributes & ATTR_HIDDEN != 0
     }
+    
+    /// vérifie si c'est un fichier système
+    pub fn is_system(&self) -> bool {
+        self.attributes & ATTR_SYSTEM != 0
+    }
 }
 
