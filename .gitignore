@@ -4,3 +4,5 @@
 # lock file
 Cargo.lock
 
+# test .img file
+*.img
