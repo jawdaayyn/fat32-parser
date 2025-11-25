@@ -61,5 +61,10 @@ impl BootSector {
     pub fn data_start_sector(&self) -> u32 {
         self.reserved_sector_count as u32 + (self.num_fats as u32 * self.fat_size_32)
     }
+    
+    /// convertit un numéro de cluster en secteur
+    pub fn cluster_to_sector(&self, cluster: u32) -> u32 {
+        self.data_start_sector() + ((cluster - 2) * self.sectors_per_cluster as u32)
+    }
 }
 
