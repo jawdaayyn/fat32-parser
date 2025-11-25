@@ -1,5 +1,5 @@
 #![no_std]
-#![no_main]
+#![cfg_attr(not(test), no_main)]
 
 //! parser FAT32 en environnement no_std
 //! 
@@ -13,6 +13,7 @@
 //! - [`structures::dir_entry`] : entrées de répertoire
 //! - [`traits::block_device`] : trait pour les dispositifs de stockage
 
+#[cfg(not(test))]
 use core::panic::PanicInfo;
 
 // structures de données FAT32
@@ -63,6 +64,7 @@ mod tests;
 mod mock_device;
 
 // boucle pour les alertes no_std.
+#[cfg(not(test))]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     loop {}

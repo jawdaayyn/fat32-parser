@@ -6,7 +6,6 @@ use crate::structures::dir_entry::DirEntry;
 use crate::utils::error::Fat32Error;
 use crate::utils::fat;
 use crate::operations::file_info::FileInfo;
-use crate::operations::file_ops;
 use crate::structures::fsinfo::FSInfo;
 
 /// parser FAT32

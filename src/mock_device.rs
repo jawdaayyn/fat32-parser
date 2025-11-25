@@ -6,20 +6,19 @@ use crate::traits::block_device::BlockDevice;
 use crate::utils::error::Fat32Error;
 
 #[cfg(test)]
+extern crate std;
+
+#[cfg(test)]
 pub struct MockDevice {
-    data: [u8; 512 * 1024],
+    data: std::vec::Vec<u8>, // utiliser Vec plutôt qu'un tableau géant
 }
 
 #[cfg(test)]
 impl MockDevice {
     pub fn new() -> Self {
         Self {
-            data: [0; 512 * 1024],
+            data: std::vec![0; 512 * 10000], // 5 MB
         }
-    }
-    
-    pub fn with_data(data: [u8; 512 * 1024]) -> Self {
-        Self { data }
     }
 }
 

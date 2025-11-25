@@ -55,21 +55,21 @@ pub fn create_dir_entry(name: [u8; 11], cluster: u32) -> DirEntry {
 /// convertit un nom court en format 8.3
 pub fn format_short_name(name: &str) -> [u8; 11] {
     let mut result = [b' '; 11];
-    let parts: Vec<&str> = name.split('.').collect();
     
-    if parts.len() == 2 {
-        let basename = parts[0].as_bytes();
-        let ext = parts[1].as_bytes();
+    // trouver le point
+    if let Some(dot_pos) = name.bytes().position(|b| b == b'.') {
+        let basename = &name[..dot_pos];
+        let ext = &name[dot_pos + 1..];
         
-        for (i, &byte) in basename.iter().take(8).enumerate() {
+        for (i, byte) in basename.bytes().take(8).enumerate() {
             result[i] = byte.to_ascii_uppercase();
         }
         
-        for (i, &byte) in ext.iter().take(3).enumerate() {
+        for (i, byte) in ext.bytes().take(3).enumerate() {
             result[8 + i] = byte.to_ascii_uppercase();
         }
     } else {
-        for (i, &byte) in name.as_bytes().iter().take(8).enumerate() {
+        for (i, byte) in name.bytes().take(8).enumerate() {
             result[i] = byte.to_ascii_uppercase();
         }
     }
