@@ -2,12 +2,12 @@
 
 #[cfg(test)]
 mod tests {
-    use crate::boot_sector::BootSector;
-    use crate::fat::*;
-    use crate::dir_entry::*;
-    use crate::file_ops::*;
-    use crate::utils::*;
-    use crate::validator::*;
+    use crate::structures::boot_sector::BootSector;
+    use crate::utils::fat::*;
+    use crate::structures::dir_entry::*;
+    use crate::operations::file_ops::*;
+    use crate::utils::helpers::*;
+    use crate::utils::validator::*;
 
     #[test]
     fn test_fat_is_eoc() {
@@ -224,7 +224,7 @@ mod tests {
     #[test]
     fn test_mock_device() {
         use crate::mock_device::MockDevice;
-        use crate::block_device::BlockDevice;
+        use crate::traits::block_device::BlockDevice;
         
         let mut device = MockDevice::new();
         let mut buffer = [0u8; 512];
@@ -242,7 +242,7 @@ mod tests {
     
     #[test]
     fn test_file_info_from_entry() {
-        use crate::file_info::FileInfo;
+        use crate::operations::file_info::FileInfo;
         
         let entry = create_file_entry(format_short_name("test.txt"), 100, 2048);
         let info = FileInfo::from_dir_entry(&entry);
@@ -270,7 +270,7 @@ mod tests {
     
     #[test]
     fn test_constants() {
-        use crate::constants::*;
+        use crate::utils::constants::*;
         
         assert_eq!(SECTOR_SIZE, 512);
         assert_eq!(BOOT_SIGNATURE, 0xAA55);
@@ -290,7 +290,7 @@ mod tests {
     
     #[test]
     fn test_error_result_type() {
-        use crate::error::{Fat32Error, Result};
+        use crate::utils::error::{Fat32Error, Result};
         
         let ok_result: Result<u32> = Ok(42);
         let err_result: Result<u32> = Err(Fat32Error::NotFound);

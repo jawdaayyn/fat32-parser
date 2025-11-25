@@ -4,7 +4,7 @@
 //! par tout dispositif de stockage (disque, image, etc.) pour être
 //! utilisé avec le parser FAT32.
 
-use crate::error::Fat32Error;
+use crate::utils::error::Fat32Error;
 
 /// trait pour un dispositif bloc
 /// 

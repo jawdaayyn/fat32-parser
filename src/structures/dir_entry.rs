@@ -44,8 +44,8 @@ impl DirEntry {
     }
     
     pub fn is_empty(&self) -> bool {
-        self.name[0] == crate::constants::ENTRY_EMPTY 
-            || self.name[0] == crate::constants::ENTRY_DELETED
+        self.name[0] == crate::utils::constants::ENTRY_EMPTY 
+            || self.name[0] == crate::utils::constants::ENTRY_DELETED
     }
     
     /// retourne le nom au format 8.3
@@ -75,7 +75,7 @@ impl DirEntry {
     
     /// marque l'entrée comme supprimée
     pub fn mark_deleted(&mut self) {
-        self.name[0] = crate::constants::ENTRY_DELETED;
+        self.name[0] = crate::utils::constants::ENTRY_DELETED;
     }
     
     /// vérifie si l'entrée est le répertoire "."

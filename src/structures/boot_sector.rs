@@ -48,7 +48,7 @@ impl BootSector {
     }
     
     pub fn is_valid(&self) -> bool {
-        self.signature == crate::constants::BOOT_SIGNATURE
+        self.signature == crate::utils::constants::BOOT_SIGNATURE
     }
     
     /// retourne la taille d'un cluster en octets

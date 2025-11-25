@@ -3,7 +3,7 @@
 //! fonctions utilitaires pour créer et manipuler des fichiers
 //! et des répertoires.
 
-use crate::dir_entry::{DirEntry, ATTR_DIRECTORY, ATTR_ARCHIVE};
+use crate::structures::dir_entry::{DirEntry, ATTR_DIRECTORY, ATTR_ARCHIVE};
 
 /// crée une nouvelle entrée de fichier
 /// 

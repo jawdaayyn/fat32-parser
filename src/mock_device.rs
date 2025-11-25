@@ -1,9 +1,9 @@
 //! mock device pour tests
 
 #[cfg(test)]
-use crate::block_device::BlockDevice;
+use crate::traits::block_device::BlockDevice;
 #[cfg(test)]
-use crate::error::Fat32Error;
+use crate::utils::error::Fat32Error;
 
 #[cfg(test)]
 pub struct MockDevice {

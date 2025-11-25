@@ -14,7 +14,7 @@ pub struct FileInfo {
 
 impl FileInfo {
     /// crée depuis une DirEntry
-    pub fn from_dir_entry(entry: &crate::dir_entry::DirEntry) -> Self {
+    pub fn from_dir_entry(entry: &crate::structures::dir_entry::DirEntry) -> Self {
         Self {
             name: entry.name,
             is_directory: entry.is_directory(),

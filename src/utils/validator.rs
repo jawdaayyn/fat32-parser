@@ -1,7 +1,7 @@
 //! fonctions de validation
 
-use crate::boot_sector::BootSector;
-use crate::constants::*;
+use crate::structures::boot_sector::BootSector;
+use crate::utils::constants::*;
 
 /// valide un boot sector FAT32
 pub fn validate_boot_sector(bs: &BootSector) -> bool {

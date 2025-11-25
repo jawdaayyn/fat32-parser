@@ -1,13 +1,13 @@
 //! parser principal FAT32
 
-use crate::boot_sector::BootSector;
-use crate::block_device::BlockDevice;
-use crate::dir_entry::DirEntry;
-use crate::error::Fat32Error;
-use crate::fat;
-use crate::file_info::FileInfo;
-use crate::file_ops;
-use crate::fsinfo::FSInfo;
+use crate::structures::boot_sector::BootSector;
+use crate::traits::block_device::BlockDevice;
+use crate::structures::dir_entry::DirEntry;
+use crate::utils::error::Fat32Error;
+use crate::utils::fat;
+use crate::operations::file_info::FileInfo;
+use crate::operations::file_ops;
+use crate::structures::fsinfo::FSInfo;
 
 /// parser FAT32
 /// 
