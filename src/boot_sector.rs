@@ -56,5 +56,10 @@ impl BootSector {
     pub fn fat_start_sector(&self) -> u32 {
         self.reserved_sector_count as u32
     }
+    
+    /// retourne le secteur de début de la zone de données
+    pub fn data_start_sector(&self) -> u32 {
+        self.reserved_sector_count as u32 + (self.num_fats as u32 * self.fat_size_32)
+    }
 }
 
