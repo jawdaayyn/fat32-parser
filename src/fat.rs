@@ -8,3 +8,8 @@ pub fn is_eoc(cluster: u32) -> bool {
     cluster >= FAT_EOC
 }
 
+/// vérifie si un cluster est libre
+pub fn is_free(cluster: u32) -> bool {
+    cluster == FAT_FREE
+}
+
