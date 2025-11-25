@@ -44,7 +44,8 @@ impl DirEntry {
     }
     
     pub fn is_empty(&self) -> bool {
-        self.name[0] == 0x00 || self.name[0] == 0xE5
+        self.name[0] == crate::constants::ENTRY_EMPTY 
+            || self.name[0] == crate::constants::ENTRY_DELETED
     }
     
     /// retourne le nom au format 8.3

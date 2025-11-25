@@ -24,9 +24,13 @@ pub mod error;
 pub mod block_device;
 pub mod parser;
 pub mod file_ops;
+pub mod file_info;
+pub mod constants;
 
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod mock_device;
 
 // boucle pour les alertes no_std.
 #[panic_handler]

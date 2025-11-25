@@ -1,4 +1,7 @@
 //! structure FSInfo
+//! 
+//! le secteur FSInfo contient des informations sur l'état du système
+//! de fichiers, notamment le nombre de clusters libres.
 
 /// FSInfo (512 octets)
 #[repr(C, packed)]

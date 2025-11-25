@@ -5,6 +5,7 @@ use crate::block_device::BlockDevice;
 use crate::dir_entry::DirEntry;
 use crate::error::Fat32Error;
 use crate::fat;
+use crate::file_info::FileInfo;
 use crate::file_ops;
 use crate::fsinfo::FSInfo;
 
@@ -244,6 +245,41 @@ impl<D: BlockDevice> Fat32Parser<D> {
         }
         
         Ok(())
+    }
+    
+    /// compte le nombre de clusters libres
+    pub fn count_free_clusters(&self) -> Result<u32, Fat32Error> {
+        let total_clusters = self.boot_sector.total_sectors_32 / self.boot_sector.sectors_per_cluster as u32;
+        let mut count = 0;
+        
+        for cluster in 2..total_clusters {
+            let entry = self.read_fat_entry(cluster)?;
+            if fat::is_free(entry) {
+                count += 1;
+            }
+        }
+        
+        Ok(count)
+    }
+    
+    /// retourne la taille d'un fichier en clusters
+    pub fn file_size_in_clusters(&self, size: u32) -> u32 {
+        let cluster_size = self.boot_sector.cluster_size();
+        (size + cluster_size - 1) / cluster_size
+    }
+    
+    /// liste les fichiers du répertoire racine
+    pub fn list_root_files(&self) -> Result<[Option<FileInfo>; 16], Fat32Error> {
+        let entries = self.read_root_dir()?;
+        let mut files = [None; 16];
+        
+        for (i, entry) in entries.iter().enumerate() {
+            if !entry.is_empty() && !entry.is_long_name() {
+                files[i] = Some(FileInfo::from_dir_entry(entry));
+            }
+        }
+        
+        Ok(files)
     }
 }
 

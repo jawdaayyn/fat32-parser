@@ -48,7 +48,7 @@ impl BootSector {
     }
     
     pub fn is_valid(&self) -> bool {
-        self.signature == 0xAA55
+        self.signature == crate::constants::BOOT_SIGNATURE
     }
     
     /// retourne la taille d'un cluster en octets
@@ -69,6 +69,24 @@ impl BootSector {
     /// convertit un numéro de cluster en secteur
     pub fn cluster_to_sector(&self, cluster: u32) -> u32 {
         self.data_start_sector() + ((cluster - 2) * self.sectors_per_cluster as u32)
+    }
+    
+    /// retourne le nombre total de secteurs
+    pub fn total_sectors(&self) -> u32 {
+        if self.total_sectors_32 != 0 {
+            self.total_sectors_32
+        } else {
+            self.total_sectors_16 as u32
+        }
+    }
+    
+    /// retourne la taille de la FAT en secteurs
+    pub fn fat_size(&self) -> u32 {
+        if self.fat_size_32 != 0 {
+            self.fat_size_32
+        } else {
+            self.fat_size_16 as u32
+        }
     }
 }
 

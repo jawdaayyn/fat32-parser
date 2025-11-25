@@ -23,3 +23,11 @@ pub fn is_bad(cluster: u32) -> bool {
     cluster == FAT_BAD
 }
 
+/// masque FAT32 pour ignorer les bits hauts
+pub const FAT_MASK: u32 = 0x0FFFFFFF;
+
+/// applique le masque FAT32
+pub fn mask_cluster(cluster: u32) -> u32 {
+    cluster & FAT_MASK
+}
+

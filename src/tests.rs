@@ -25,6 +25,12 @@ mod tests {
         assert!(is_bad(0x0FFFFFF7));
         assert!(!is_bad(0x00000002));
     }
+    
+    #[test]
+    fn test_fat_mask() {
+        assert_eq!(mask_cluster(0xF0000005), 0x00000005);
+        assert_eq!(mask_cluster(0x0FFFFFFF), 0x0FFFFFFF);
+    }
 
     #[test]
     fn test_boot_sector_size() {
@@ -157,6 +163,8 @@ mod tests {
         assert_eq!(bs.data_start_sector(), 2032);
         assert_eq!(bs.cluster_to_sector(2), 2032);
         assert_eq!(bs.cluster_to_sector(3), 2040);
+        assert_eq!(bs.total_sectors(), 1024000);
+        assert_eq!(bs.fat_size(), 1000);
     }
     
     #[test]
@@ -209,6 +217,37 @@ mod tests {
         
         assert!(names_match(&name1, &name2));
         assert!(!names_match(&name1, &name3));
+    }
+    
+    #[test]
+    fn test_mock_device() {
+        use crate::mock_device::MockDevice;
+        use crate::block_device::BlockDevice;
+        
+        let mut device = MockDevice::new();
+        let mut buffer = [0u8; 512];
+        buffer[0] = 0xAA;
+        buffer[511] = 0x55;
+        
+        device.write_sector(0, &buffer).unwrap();
+        
+        let mut read_buffer = [0u8; 512];
+        device.read_sector(0, &mut read_buffer).unwrap();
+        
+        assert_eq!(read_buffer[0], 0xAA);
+        assert_eq!(read_buffer[511], 0x55);
+    }
+    
+    #[test]
+    fn test_file_info_from_entry() {
+        use crate::file_info::FileInfo;
+        
+        let entry = create_file_entry(format_short_name("test.txt"), 100, 2048);
+        let info = FileInfo::from_dir_entry(&entry);
+        
+        assert_eq!(info.first_cluster, 100);
+        assert_eq!(info.size, 2048);
+        assert!(!info.is_directory);
     }
 }
 
