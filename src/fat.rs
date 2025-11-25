@@ -1,3 +1,8 @@
+//! constantes et fonctions pour la table FAT
+//! 
+//! la table FAT (File Allocation Table) stocke la chaîne des clusters
+//! pour chaque fichier.
+
 // valeurs pour fat
 pub const FAT_FREE: u32 = 0x00000000;
 pub const FAT_BAD: u32 = 0x0FFFFFF7;

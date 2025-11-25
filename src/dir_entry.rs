@@ -1,4 +1,7 @@
 //! entrées de répertoire
+//! 
+//! ce module contient la structure DirEntry qui représente une entrée
+//! dans un répertoire FAT32 (fichier ou sous-répertoire).
 
 /// entrée de répertoire (32 octets)
 #[repr(C, packed)]

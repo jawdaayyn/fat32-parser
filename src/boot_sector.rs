@@ -1,4 +1,8 @@
 //! boot sector
+//! 
+//! contient la structure BootSector qui représente le premier secteur
+//! d'un volume FAT32. ce secteur contient toutes les informations
+//! nécessaires pour accéder au système de fichiers.
 
 /// boot sector (512 octets)
 #[repr(C, packed)]

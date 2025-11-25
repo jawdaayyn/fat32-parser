@@ -1,6 +1,18 @@
 #![no_std]
 #![no_main]
 
+//! parser FAT32 en environnement no_std
+//! 
+//! ce crate fournit les outils pour parser un système de fichiers FAT32
+//! sans dépendre de la bibliothèque standard.
+//! 
+//! # Modules principaux
+//! 
+//! - [`parser`] : structure principale Fat32Parser
+//! - [`boot_sector`] : structure du boot sector
+//! - [`dir_entry`] : entrées de répertoire
+//! - [`block_device`] : trait pour les dispositifs de stockage
+
 use core::panic::PanicInfo;
 
 // modules du parser FAT32
@@ -11,6 +23,9 @@ pub mod fat;
 pub mod error;
 pub mod block_device;
 pub mod parser;
+
+#[cfg(test)]
+mod tests;
 
 // boucle pour les alertes no_std.
 #[panic_handler]

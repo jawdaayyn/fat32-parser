@@ -8,6 +8,22 @@ use crate::fat;
 use crate::fsinfo::FSInfo;
 
 /// parser FAT32
+/// 
+/// # Exemples
+/// 
+/// ```no_run
+/// use fat32_parser::parser::Fat32Parser;
+/// use fat32_parser::block_device::BlockDevice;
+/// 
+/// // créer un parser avec un device
+/// let parser = Fat32Parser::new(mon_device)?;
+/// 
+/// // charger FSInfo
+/// parser.load_fsinfo()?;
+/// 
+/// // lire le répertoire racine
+/// let entries = parser.read_root_dir()?;
+/// ```
 pub struct Fat32Parser<D: BlockDevice> {
     device: D,
     boot_sector: BootSector,
@@ -121,6 +137,81 @@ impl<D: BlockDevice> Fat32Parser<D> {
         }
         
         Ok(entries)
+    }
+    
+    /// suit une chaîne de clusters
+    pub fn follow_cluster_chain(&self, start_cluster: u32) -> Result<[u32; 128], Fat32Error> {
+        let mut chain = [0u32; 128];
+        let mut current = start_cluster;
+        let mut count = 0;
+        
+        while !fat::is_eoc(current) && count < 128 {
+            chain[count] = current;
+            count += 1;
+            current = self.read_fat_entry(current)?;
+        }
+        
+        Ok(chain)
+    }
+    
+    /// retourne le FSInfo
+    pub fn fsinfo(&self) -> Option<&FSInfo> {
+        self.fsinfo.as_ref()
+    }
+    
+    /// écrit dans un cluster
+    pub fn write_cluster(&mut self, cluster: u32, data: &[u8]) -> Result<(), Fat32Error> {
+        let first_sector = self.boot_sector.cluster_to_sector(cluster);
+        let sectors_per_cluster = self.boot_sector.sectors_per_cluster as u32;
+        
+        for i in 0..sectors_per_cluster {
+            let offset = (i * 512) as usize;
+            let end = offset + 512;
+            if end <= data.len() {
+                self.device.write_sector(first_sector + i, &data[offset..end])?;
+            }
+        }
+        
+        Ok(())
+    }
+    
+    /// trouve un cluster libre
+    pub fn find_free_cluster(&self) -> Result<u32, Fat32Error> {
+        let total_clusters = self.boot_sector.total_sectors_32 / self.boot_sector.sectors_per_cluster as u32;
+        
+        for cluster in 2..total_clusters {
+            let entry = self.read_fat_entry(cluster)?;
+            if fat::is_free(entry) {
+                return Ok(cluster);
+            }
+        }
+        
+        Err(Fat32Error::NotFound)
+    }
+    
+    /// écrit une entrée dans la FAT
+    pub fn write_fat_entry(&mut self, cluster: u32, value: u32) -> Result<(), Fat32Error> {
+        if cluster < 2 {
+            return Err(Fat32Error::InvalidCluster);
+        }
+        
+        let fat_offset = cluster * 4;
+        let fat_sector = self.boot_sector.fat_start_sector() + (fat_offset / 512);
+        let entry_offset = (fat_offset % 512) as usize;
+        
+        let mut buffer = [0u8; 512];
+        self.device.read_sector(fat_sector, &mut buffer)?;
+        
+        let masked_value = value & 0x0FFFFFFF;
+        let bytes = masked_value.to_le_bytes();
+        buffer[entry_offset] = bytes[0];
+        buffer[entry_offset + 1] = bytes[1];
+        buffer[entry_offset + 2] = bytes[2];
+        buffer[entry_offset + 3] = bytes[3];
+        
+        self.device.write_sector(fat_sector, &buffer)?;
+        
+        Ok(())
     }
 }
 
