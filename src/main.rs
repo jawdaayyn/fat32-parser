@@ -3,6 +3,9 @@
 
 use core::panic::PanicInfo;
 
+// Modules du parser FAT32
+pub mod boot_sector;
+
 // boucle pour les alertes no_std.
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
