@@ -48,5 +48,15 @@ impl DirEntry {
     pub fn get_name(&self) -> [u8; 11] {
         self.name
     }
+    
+    /// vérifie si le fichier est en lecture seule
+    pub fn is_read_only(&self) -> bool {
+        self.attributes & ATTR_READ_ONLY != 0
+    }
+    
+    /// vérifie si le fichier est caché
+    pub fn is_hidden(&self) -> bool {
+        self.attributes & ATTR_HIDDEN != 0
+    }
 }
 
