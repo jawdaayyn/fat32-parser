@@ -46,5 +46,10 @@ impl BootSector {
     pub fn is_valid(&self) -> bool {
         self.signature == 0xAA55
     }
+    
+    /// retourne la taille d'un cluster en octets
+    pub fn cluster_size(&self) -> u32 {
+        self.bytes_per_sector as u32 * self.sectors_per_cluster as u32
+    }
 }
 
