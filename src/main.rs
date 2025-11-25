@@ -7,6 +7,7 @@ use core::panic::PanicInfo;
 pub mod boot_sector;
 pub mod fsinfo;
 pub mod dir_entry;
+pub mod fat;
 
 // boucle pour les alertes no_std.
 #[panic_handler]
