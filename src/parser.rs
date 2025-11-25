@@ -5,6 +5,7 @@ use crate::block_device::BlockDevice;
 use crate::dir_entry::DirEntry;
 use crate::error::Fat32Error;
 use crate::fat;
+use crate::file_ops;
 use crate::fsinfo::FSInfo;
 
 /// parser FAT32
@@ -210,6 +211,37 @@ impl<D: BlockDevice> Fat32Parser<D> {
         buffer[entry_offset + 3] = bytes[3];
         
         self.device.write_sector(fat_sector, &buffer)?;
+        
+        Ok(())
+    }
+    
+    /// alloue un nouveau cluster
+    pub fn allocate_cluster(&mut self, prev_cluster: Option<u32>) -> Result<u32, Fat32Error> {
+        let new_cluster = self.find_free_cluster()?;
+        
+        self.write_fat_entry(new_cluster, crate::fat::FAT_EOC)?;
+        
+        if let Some(prev) = prev_cluster {
+            self.write_fat_entry(prev, new_cluster)?;
+        }
+        
+        Ok(new_cluster)
+    }
+    
+    /// libère un cluster
+    pub fn free_cluster(&mut self, cluster: u32) -> Result<(), Fat32Error> {
+        self.write_fat_entry(cluster, crate::fat::FAT_FREE)
+    }
+    
+    /// libère une chaîne de clusters
+    pub fn free_cluster_chain(&mut self, start_cluster: u32) -> Result<(), Fat32Error> {
+        let mut current = start_cluster;
+        
+        while !fat::is_eoc(current) && !fat::is_free(current) {
+            let next = self.read_fat_entry(current)?;
+            self.free_cluster(current)?;
+            current = next;
+        }
         
         Ok(())
     }

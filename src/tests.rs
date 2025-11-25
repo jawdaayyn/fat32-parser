@@ -5,6 +5,7 @@ mod tests {
     use crate::boot_sector::BootSector;
     use crate::fat::*;
     use crate::dir_entry::*;
+    use crate::file_ops::*;
 
     #[test]
     fn test_fat_is_eoc() {
@@ -156,6 +157,58 @@ mod tests {
         assert_eq!(bs.data_start_sector(), 2032);
         assert_eq!(bs.cluster_to_sector(2), 2032);
         assert_eq!(bs.cluster_to_sector(3), 2040);
+    }
+    
+    #[test]
+    fn test_format_short_name() {
+        let name1 = format_short_name("test.txt");
+        assert_eq!(&name1[0..4], b"TEST");
+        assert_eq!(&name1[8..11], b"TXT");
+        
+        let name2 = format_short_name("readme");
+        assert_eq!(&name2[0..6], b"README");
+    }
+    
+    #[test]
+    fn test_create_file_entry() {
+        let name = format_short_name("test.txt");
+        let entry = create_file_entry(name, 0x12345, 1024);
+        
+        assert_eq!(entry.first_cluster(), 0x12345);
+        assert_eq!(entry.file_size, 1024);
+        assert!(entry.is_file());
+        assert!(!entry.is_directory());
+    }
+    
+    #[test]
+    fn test_create_dir_entry() {
+        let name = format_short_name("mydir");
+        let entry = create_dir_entry(name, 0x100);
+        
+        assert_eq!(entry.first_cluster(), 0x100);
+        assert_eq!(entry.file_size, 0);
+        assert!(entry.is_directory());
+        assert!(!entry.is_file());
+    }
+    
+    #[test]
+    fn test_is_valid_name() {
+        assert!(is_valid_name("test.txt"));
+        assert!(is_valid_name("readme"));
+        assert!(is_valid_name("a.b"));
+        assert!(!is_valid_name(""));
+        assert!(!is_valid_name("verylongname.txt"));
+        assert!(!is_valid_name("bad*name"));
+    }
+    
+    #[test]
+    fn test_names_match() {
+        let name1 = format_short_name("test.txt");
+        let name2 = format_short_name("test.txt");
+        let name3 = format_short_name("other.txt");
+        
+        assert!(names_match(&name1, &name2));
+        assert!(!names_match(&name1, &name3));
     }
 }
 

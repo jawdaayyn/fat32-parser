@@ -23,6 +23,7 @@ pub mod fat;
 pub mod error;
 pub mod block_device;
 pub mod parser;
+pub mod file_ops;
 
 #[cfg(test)]
 mod tests;
