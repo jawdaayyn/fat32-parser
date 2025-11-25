@@ -51,5 +51,10 @@ impl BootSector {
     pub fn cluster_size(&self) -> u32 {
         self.bytes_per_sector as u32 * self.sectors_per_cluster as u32
     }
+    
+    /// retourne le secteur de début de la première FAT
+    pub fn fat_start_sector(&self) -> u32 {
+        self.reserved_sector_count as u32
+    }
 }
 
