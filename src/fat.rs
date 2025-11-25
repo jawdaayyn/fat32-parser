@@ -13,3 +13,8 @@ pub fn is_free(cluster: u32) -> bool {
     cluster == FAT_FREE
 }
 
+/// vérifie si un cluster est défectueux
+pub fn is_bad(cluster: u32) -> bool {
+    cluster == FAT_BAD
+}
+
