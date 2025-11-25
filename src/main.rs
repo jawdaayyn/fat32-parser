@@ -76,14 +76,14 @@ fn main() {
     let image_path = &args[1];
     
     println!("\n=== PARSER FAT32 ===\n");
-    println!("📁 Image: {}", image_path);
+    println!("Image: {}", image_path);
     
     match parse_fat32_image(image_path) {
         Ok(_) => {
-            println!("\n✅ Parsing réussi !");
+            println!("\nParsing réussi !");
         }
         Err(e) => {
-            eprintln!("\n❌ Erreur: {}", e);
+            eprintln!("\nErreur: {}", e);
             process::exit(1);
         }
     }
@@ -123,10 +123,10 @@ fn parse_fat32_image(path: &str) -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     
-    println!("📖 Ouverture de l'image...\n");
+    println!("Ouverture de l'image...\n");
     let device = FileDevice::new(path)?;
     
-    println!("📖 Lecture du boot sector...");
+    println!("Lecture du boot sector...");
     let parser = Fat32Parser::new(device)
         .map_err(|e| format!("Erreur lors du parsing du boot sector: {:?}", e))?;
     
@@ -141,7 +141,7 @@ fn parse_fat32_image(path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let oem_name = boot.oem_name;
     let volume_label = boot.volume_label;
     
-    println!("\n📋 BOOT SECTOR:");
+    println!("\nBOOT SECTOR:");
     println!("  ├─ Signature: 0x{:04X} {}", signature, 
         if boot.is_valid() { "✓" } else { "✗" });
     println!("  ├─ OEM: {:?}", std::str::from_utf8(&oem_name).unwrap_or("???"));
@@ -155,11 +155,11 @@ fn parse_fat32_image(path: &str) -> Result<(), Box<dyn std::error::Error>> {
     println!("  └─ Volume: {:?}", 
         std::str::from_utf8(&volume_label).unwrap_or("???").trim());
     
-    println!("\n📖 Lecture du répertoire racine...");
+    println!("\nLecture du répertoire racine...");
     let entries = parser.read_root_dir()
         .map_err(|e| format!("Erreur lecture répertoire: {:?}", e))?;
     
-    println!("\n📁 CONTENU:\n");
+    println!("\nCONTENU:\n");
     
     let mut count = 0;
     for entry in entries.iter() {
@@ -170,10 +170,10 @@ fn parse_fat32_image(path: &str) -> Result<(), Box<dyn std::error::Error>> {
                 .trim_end_matches('\0').trim();
             
             if entry.is_directory() {
-                println!("  📁 {} (cluster: {})", name_str, entry.first_cluster());
+                println!("{} (cluster: {})", name_str, entry.first_cluster());
             } else {
                 let size = entry.file_size;
-                println!("  📄 {} ({} octets, cluster: {})", 
+                println!("{} ({} octets, cluster: {})", 
                     name_str, size, entry.first_cluster());
             }
         }

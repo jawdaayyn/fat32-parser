@@ -42,7 +42,8 @@ pub struct BootSector {
 
 impl BootSector {
     /// # Safety
-    /// buffer doit être 512 octets valides
+    /// - `data` doit contenir 512 octets valides
+    /// - utilise `read_unaligned` car la structure est `packed`
     pub unsafe fn from_bytes(data: &[u8; 512]) -> Self {
         core::ptr::read_unaligned(data.as_ptr() as *const BootSector)
     }

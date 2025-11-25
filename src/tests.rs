@@ -100,7 +100,7 @@ mod tests {
         // maintenant parser le FAT32
         std::println!("\n=== PARSING DU VOLUME ===\n");
         
-        std::println!("📖 Lecture du secteur 0 (Boot Sector)...");
+        std::println!("Lecture du secteur 0 (Boot Sector)...");
         let parser = Fat32Parser::new(device).unwrap();
         
         std::println!("✓ Parser initialisé");
@@ -118,7 +118,7 @@ mod tests {
         let oem_name = boot.oem_name;
         let volume_label = boot.volume_label;
         
-        std::println!("\n📋 DÉTAILS DU BOOT SECTOR PARSÉ:");
+        std::println!("\nDÉTAILS DU BOOT SECTOR PARSÉ:");
         std::println!("  ├─ Signature: 0x{:04X} (valide: {})", signature, boot.is_valid());
         std::println!("  ├─ OEM Name: {:?}", core::str::from_utf8(&oem_name).unwrap_or("???"));
         std::println!("  ├─ Octets/secteur: {}", bytes_per_sector);
@@ -135,14 +135,14 @@ mod tests {
         std::println!("  └─ Volume label: {:?}", core::str::from_utf8(&volume_label).unwrap_or("???").trim());
         
         // lire le répertoire racine
-        std::println!("\n📖 Lecture du cluster {} (répertoire racine)...", root_cluster);
+        std::println!("\nLecture du cluster {} (répertoire racine)...", root_cluster);
         std::println!("   Secteur de début: {}", boot.cluster_to_sector(root_cluster));
         std::println!("   Nombre de secteurs à lire: {}", sectors_per_cluster);
         
         let entries = parser.read_root_dir().unwrap();
         
         std::println!("✓ {} octets lus et décodés en entrées de répertoire", boot.cluster_size());
-        std::println!("\n📁 CONTENU DU RÉPERTOIRE RACINE (PARSÉ):\n");
+        std::println!("\nCONTENU DU RÉPERTOIRE RACINE (PARSÉ):\n");
         
         let mut count = 0;
         for (idx, entry) in entries.iter().enumerate() {
@@ -165,10 +165,10 @@ mod tests {
                     else { "ARCHIVE" });
                 
                 if entry.is_directory() {
-                    std::println!("  ├─ Type: 📁 DOSSIER");
+                    std::println!("  ├─ Type: DOSSIER");
                 } else {
                     let size = entry.file_size;
-                    std::println!("  ├─ Type: 📄 FICHIER");
+                    std::println!("  ├─ Type: FICHIER");
                     std::println!("  ├─ Taille: {} octets (0x{:08X})", size, size);
                 }
                 
@@ -179,10 +179,9 @@ mod tests {
             }
         }
         
-        std::println!("✅ RÉSULTAT: {} éléments trouvés et parsés avec succès", count);
+        std::println!("RÉSULTAT: {} éléments trouvés et parsés avec succès", count);
         std::println!("\n=== TEST RÉUSSI ===\n");
         
         assert_eq!(count, 3);
     }
 }
-
