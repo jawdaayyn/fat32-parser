@@ -6,5 +6,8 @@ pub enum Fat32Error {
     InvalidSignature,
     InvalidSector,
     InvalidCluster,
+    ReadError,
+    WriteError,
+    NotFound,
 }
 
