@@ -11,6 +11,9 @@ use crate::fsinfo::FSInfo;
 
 /// parser FAT32
 /// 
+/// structure principale pour interagir avec un système de fichiers FAT32.
+/// fonctionne avec n'importe quel dispositif implémentant le trait BlockDevice.
+/// 
 /// # Exemples
 /// 
 /// ```no_run
@@ -18,13 +21,20 @@ use crate::fsinfo::FSInfo;
 /// use fat32_parser::block_device::BlockDevice;
 /// 
 /// // créer un parser avec un device
-/// let parser = Fat32Parser::new(mon_device)?;
+/// let mut parser = Fat32Parser::new(mon_device)?;
 /// 
 /// // charger FSInfo
 /// parser.load_fsinfo()?;
 /// 
 /// // lire le répertoire racine
 /// let entries = parser.read_root_dir()?;
+/// 
+/// // lister les fichiers
+/// let files = parser.list_root_files()?;
+/// 
+/// // lire un fichier complet
+/// let mut buffer = [0u8; 4096];
+/// let bytes_read = parser.read_file(cluster, &mut buffer)?;
 /// ```
 pub struct Fat32Parser<D: BlockDevice> {
     device: D,
@@ -280,6 +290,63 @@ impl<D: BlockDevice> Fat32Parser<D> {
         }
         
         Ok(files)
+    }
+    
+    /// lit un fichier complet en suivant la chaîne de clusters
+    pub fn read_file(&self, start_cluster: u32, buffer: &mut [u8]) -> Result<usize, Fat32Error> {
+        let cluster_size = self.boot_sector.cluster_size() as usize;
+        let mut current_cluster = start_cluster;
+        let mut offset = 0;
+        
+        while !fat::is_eoc(current_cluster) && offset < buffer.len() {
+            let read_size = core::cmp::min(cluster_size, buffer.len() - offset);
+            
+            if read_size == cluster_size {
+                self.read_cluster(current_cluster, &mut buffer[offset..offset + cluster_size])?;
+            } else {
+                let mut temp = [0u8; 4096];
+                self.read_cluster(current_cluster, &mut temp[..cluster_size])?;
+                buffer[offset..offset + read_size].copy_from_slice(&temp[..read_size]);
+            }
+            
+            offset += read_size;
+            current_cluster = self.read_fat_entry(current_cluster)?;
+        }
+        
+        Ok(offset)
+    }
+    
+    /// écrit un fichier complet
+    pub fn write_file(&mut self, start_cluster: u32, data: &[u8]) -> Result<(), Fat32Error> {
+        let cluster_size = self.boot_sector.cluster_size() as usize;
+        let mut current_cluster = start_cluster;
+        let mut offset = 0;
+        
+        while offset < data.len() {
+            let write_size = core::cmp::min(cluster_size, data.len() - offset);
+            
+            if write_size == cluster_size {
+                self.write_cluster(current_cluster, &data[offset..offset + cluster_size])?;
+            } else {
+                let mut temp = [0u8; 4096];
+                temp[..write_size].copy_from_slice(&data[offset..offset + write_size]);
+                self.write_cluster(current_cluster, &temp[..cluster_size])?;
+            }
+            
+            offset += write_size;
+            
+            if offset < data.len() {
+                let next = self.read_fat_entry(current_cluster)?;
+                if fat::is_eoc(next) {
+                    let new_cluster = self.allocate_cluster(Some(current_cluster))?;
+                    current_cluster = new_cluster;
+                } else {
+                    current_cluster = next;
+                }
+            }
+        }
+        
+        Ok(())
     }
 }
 

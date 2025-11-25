@@ -26,6 +26,8 @@ pub mod parser;
 pub mod file_ops;
 pub mod file_info;
 pub mod constants;
+pub mod utils;
+pub mod validator;
 
 #[cfg(test)]
 mod tests;

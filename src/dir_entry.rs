@@ -72,5 +72,20 @@ impl DirEntry {
     pub fn is_long_name(&self) -> bool {
         self.attributes == ATTR_LONG_NAME
     }
+    
+    /// marque l'entrée comme supprimée
+    pub fn mark_deleted(&mut self) {
+        self.name[0] = crate::constants::ENTRY_DELETED;
+    }
+    
+    /// vérifie si l'entrée est le répertoire "."
+    pub fn is_dot(&self) -> bool {
+        self.name[0] == b'.' && self.name[1] == b' '
+    }
+    
+    /// vérifie si l'entrée est le répertoire ".."
+    pub fn is_dotdot(&self) -> bool {
+        self.name[0] == b'.' && self.name[1] == b'.' && self.name[2] == b' '
+    }
 }
 

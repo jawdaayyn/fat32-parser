@@ -6,6 +6,8 @@ mod tests {
     use crate::fat::*;
     use crate::dir_entry::*;
     use crate::file_ops::*;
+    use crate::utils::*;
+    use crate::validator::*;
 
     #[test]
     fn test_fat_is_eoc() {
@@ -248,6 +250,99 @@ mod tests {
         assert_eq!(info.first_cluster, 100);
         assert_eq!(info.size, 2048);
         assert!(!info.is_directory);
+    }
+    
+    #[test]
+    fn test_short_name_to_string() {
+        let name = format_short_name("test.txt");
+        let result = short_name_to_string(&name);
+        
+        assert_eq!(&result[0..8], b"TEST.TXT");
+    }
+    
+    #[test]
+    fn test_lfn_checksum() {
+        let name = format_short_name("test.txt");
+        let checksum = lfn_checksum(&name);
+        
+        assert!(checksum > 0);
+    }
+    
+    #[test]
+    fn test_constants() {
+        use crate::constants::*;
+        
+        assert_eq!(SECTOR_SIZE, 512);
+        assert_eq!(BOOT_SIGNATURE, 0xAA55);
+        assert_eq!(FIRST_VALID_CLUSTER, 2);
+    }
+    
+    #[test]
+    fn test_dir_entry_special() {
+        let mut entry = create_file_entry(format_short_name("test.txt"), 100, 512);
+        
+        assert!(!entry.is_dot());
+        assert!(!entry.is_dotdot());
+        
+        entry.mark_deleted();
+        assert!(entry.is_empty());
+    }
+    
+    #[test]
+    fn test_error_result_type() {
+        use crate::error::{Fat32Error, Result};
+        
+        let ok_result: Result<u32> = Ok(42);
+        let err_result: Result<u32> = Err(Fat32Error::NotFound);
+        
+        assert!(ok_result.is_ok());
+        assert!(err_result.is_err());
+    }
+    
+    #[test]
+    fn test_validate_boot_sector() {
+        let valid_bs = BootSector {
+            jmp_boot: [0xEB, 0x58, 0x90],
+            oem_name: *b"MSWIN4.1",
+            bytes_per_sector: 512,
+            sectors_per_cluster: 8,
+            reserved_sector_count: 32,
+            num_fats: 2,
+            root_entry_count: 0,
+            total_sectors_16: 0,
+            media_type: 0xF8,
+            fat_size_16: 0,
+            sectors_per_track: 63,
+            num_heads: 255,
+            hidden_sectors: 0,
+            total_sectors_32: 1024000,
+            fat_size_32: 1000,
+            ext_flags: 0,
+            fs_version: 0,
+            root_cluster: 2,
+            fs_info_sector: 1,
+            backup_boot_sector: 6,
+            reserved: [0; 12],
+            drive_number: 0x80,
+            reserved1: 0,
+            boot_signature: 0x29,
+            volume_id: 0x12345678,
+            volume_label: *b"NO NAME    ",
+            fs_type: *b"FAT32   ",
+            boot_code: [0; 420],
+            signature: 0xAA55,
+        };
+        
+        assert!(validate_boot_sector(&valid_bs));
+    }
+    
+    #[test]
+    fn test_is_valid_cluster() {
+        assert!(is_valid_cluster(2));
+        assert!(is_valid_cluster(100));
+        assert!(!is_valid_cluster(0));
+        assert!(!is_valid_cluster(1));
+        assert!(!is_valid_cluster(0x0FFFFFF8));
     }
 }
 

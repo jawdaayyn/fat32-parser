@@ -49,6 +49,21 @@ Le projet inclut des tests unitaires complets :
 cargo test
 ```
 
+Tests disponibles :
+- Tests unitaires pour toutes les structures
+- Tests des fonctions FAT (is_eoc, is_free, is_bad, mask_cluster)
+- Tests des attributs de fichiers
+- Tests de création d'entrées
+- Tests de validation de noms
+- Tests du MockDevice
+- Tests de validation du Boot Sector
+- Tests des utilitaires
+
+Pour exécuter avec verbose :
+```bash
+cargo test -- --nocapture
+```
+
 ## Sécurité
 
 Les fonctions unsafe sont documentées avec la section `# Safety` de rustdoc.
