@@ -43,5 +43,10 @@ impl DirEntry {
     pub fn is_empty(&self) -> bool {
         self.name[0] == 0x00 || self.name[0] == 0xE5
     }
+    
+    /// retourne le nom au format 8.3
+    pub fn get_name(&self) -> [u8; 11] {
+        self.name
+    }
 }
 
